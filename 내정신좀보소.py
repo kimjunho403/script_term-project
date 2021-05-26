@@ -42,6 +42,34 @@ class MainGUI:
 
         self.Item_RenderText.configure(state='disabled')
 
+    def DoublePreButtonAction(self):
+        if self.pageNum > 5:
+            self.pageNum -= 5
+
+        from urllib import parse
+
+        self.Item_RenderText.configure(state='normal')
+        self.Item_RenderText.delete(0.0, END)
+
+        self.item_e = parse.quote(self.item_InputLabel.get())
+        self.area_e = parse.quote(self.area_InputLabel.get())
+        self.SearchFoundArticle()
+
+        self.Item_RenderText.configure(state='disabled')
+    def DoubleNextButtonAction(self):
+        from urllib import parse
+
+        self.pageNum += 5
+
+        self.Item_RenderText.configure(state='normal')
+        self.Item_RenderText.delete(0.0, END)
+
+        self.item_e = parse.quote(self.item_InputLabel.get())
+        self.area_e = parse.quote(self.area_InputLabel.get())
+        self.SearchFoundArticle()
+
+        self.Item_RenderText.configure(state='disabled')
+
     def MapButtonAction(self):
         pass
     def EmailButtonAction(self):
@@ -67,9 +95,10 @@ class MainGUI:
                      "/1320000/LostGoodsInfoInqireService/getLostGoodsDetailInfo?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&ATC_ID=L2018120100000706")
         req = conn.getresponse()
 
+        detail_DataList.clear()
+
         if req.status == 200:
             DocArticle = req.read().decode('UTF-8')
-            print(DocArticle)
             if DocArticle == None:
                 print("에러")
             else:
@@ -128,9 +157,11 @@ class MainGUI:
                      "/1320000/LosfundInfoInqireService/getLosfundDetailInfo?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&ATC_ID=" + "F2021052500002919" + "&FD_SN=1")
         req = conn.getresponse()
 
+        detail_DataList.clear()
+
         if req.status == 200:
             DocArticle = req.read().decode('UTF-8')
-            print(DocArticle)
+
             if DocArticle == None:
                 print("에러")
             else:
@@ -222,7 +253,6 @@ class MainGUI:
 
         if req.status == 200:
             DocArticle = req.read().decode('UTF-8')
-            print(DocArticle)
             if DocArticle == None:
                 print("에러")
             else:
@@ -248,7 +278,6 @@ class MainGUI:
                         if atom.nodeName in "lstYmd":
                             DataList.append(atom.firstChild.nodeValue)
 
-                    print(DataList)
 
             for i in range(len(DataList) // 4):
                 self.Item_RenderText.insert(INSERT, "[")
@@ -283,7 +312,7 @@ class MainGUI:
 
         if req.status == 200:
             DocArticle = req.read().decode('UTF-8')
-            print(DocArticle)
+
             if DocArticle == None:
                 print("에러")
             else:
@@ -311,7 +340,6 @@ class MainGUI:
                         if atom.nodeName in "atcId":
                             d_l.append(atom.firstChild.nodeValue)
 
-                    print(DataList)
 
             for i in range(len(DataList)//4):
                 self.Item_RenderText.insert(INSERT, "[")
@@ -341,7 +369,7 @@ class MainGUI:
     def __init__(self):
         self.window = Tk("내정신좀보소!")
         self.window.geometry("760x760")
-        self.window['bg'] = '#a9d4df'
+        self.window.configure(bg='#a9d4df')
 
         self.pageNum =1
         self.is_foundArticle = True
@@ -354,6 +382,8 @@ class MainGUI:
         self.image_email = PhotoImage(file='image/email.PNG')
         self.image_oneleft = PhotoImage(file='image/1.PNG')
         self.image_oneright = PhotoImage(file='image/2.PNG')
+        self.image_fiveleft = PhotoImage(file='image/3.PNG')
+        self.image_fiveright = PhotoImage(file='image/4.PNG')
         self.imageLabel = Label(self.window, image= self.image_title)
         self.imageLabel['bg'] = '#a9d4df'
 
@@ -389,15 +419,15 @@ class MainGUI:
         self.area_InputLabel = tkinter.Label(frame1)
         self.area_InputLabel = Entry(self.window, font=self.TempFont, width=26, borderwidth=6)
         self.area_InputLabel.pack()
-        self.area_InputLabel.place(x=400, y=170)
+        self.area_InputLabel.place(x=390, y=170)
 
         self.item_InputLabel = Entry(self.window, font=self.TempFont, width=13, borderwidth=6)
         self.item_InputLabel.pack()
-        self.item_InputLabel.place(x=400, y=230)
+        self.item_InputLabel.place(x=390, y=230)
 
         self.SearchButton = Button(self.window, font=self.TempFont, text="검색", command=self.SearchButtonAction)
         self.SearchButton.pack()
-        self.SearchButton.place(x=600, y=230)
+        self.SearchButton.place(x=590, y=230)
 
         self.RenderTextScrollbar = Scrollbar(self.window)
         self.RenderTextScrollbar.pack()
@@ -414,20 +444,41 @@ class MainGUI:
         # 상세 정보 표시판
         self.Detail_RenderText = Text(self.window, width=45, height=25, borderwidth=6)
         self.Detail_RenderText.pack()
-        self.Detail_RenderText.place(x=400, y=290)
+        self.Detail_RenderText.place(x=390, y=290)
 
         self.Detail_RenderText.configure(state='disabled')
 
         self.previous = Button(self.window, image=self.image_oneleft, command=self.PreButtonAction)
         self.previous['bg'] = '#a9d4df'
         self.previous.pack()
-        self.previous.place(x=20, y=590)
+        self.previous.place(x=120, y=590)
 
         self.Next = Button(self.window, image=self.image_oneright, command=self.NextButtonAction)
         self.Next['bg'] = '#a9d4df'
         self.Next.pack()
-        self.Next.place(x=250, y=590)
+        self.Next.place(x=200, y=590)
 
+        self.double_previous = Button(self.window, image=self.image_fiveleft, command=self.DoublePreButtonAction)
+        self.double_previous['bg'] = '#a9d4df'
+        self.double_previous.pack()
+        self.double_previous.place(x=30, y=590)
+
+        self.double_Next = Button(self.window, image=self.image_fiveright, command=self.DoubleNextButtonAction)
+        self.double_Next['bg'] = '#a9d4df'
+        self.double_Next.pack()
+        self.double_Next.place(x=300, y=590)
+
+        #라벨 테스트
+        '''
+        self.label = Label(self.window, text="Hidemwlfmewlfmql",width=10,height=5,relief="solid",activebackground = "#a9d4df" )
+        self.label.configure(state = 'normal')
+        self.label.pack()
+        self.label.place(x=300,y=300)
+
+        self.label_2 = Label(self.window, text="Hidemwlfmewlfmql", width=10, height=5)
+        self.label_2.pack()
+        self.label_2.place(x=300, y=500)
+        '''
         #상세 정보 버튼
         self.Detail_SearchButton = Button(self.window,width=28, font=self.TempFont, text="상세 정보", command=self.Detail_ButtonAction)
         self.Detail_SearchButton['bg'] = '#a9d4df'
@@ -437,15 +488,16 @@ class MainGUI:
         self.map_Button = Button(self.window, image=self.image_map, command=self.MapButtonAction)
         self.map_Button['bg'] = '#a9d4df'
         self.map_Button.pack()
-        self.map_Button.place(x=400, y=640)
+        self.map_Button.place(x=430, y=640)
 
         self.email_Button = Button(self.window, image=self.image_email, command=self.EmailButtonAction)
         self.email_Button['bg'] = '#a9d4df'
         self.email_Button.pack()
-        self.email_Button.place(x=600, y=640)
+        self.email_Button.place(x=580, y=640)
 
         frame2 = tkinter.Frame(self.window)
-        notebook.add(frame2, text="최근 들어온 물품들")
+        self.noteBook=notebook.add(frame2, text="최근 들어온 물품들")
+        #self.noteBook.configure(bg='#a9d4df')
 
         label2 = tkinter.Label(frame2, text="페이지2의 내용")
         label2.pack()
