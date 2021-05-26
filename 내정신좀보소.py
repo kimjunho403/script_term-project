@@ -5,6 +5,7 @@ import tkinter.messagebox
 import tkinter.ttk
 
 DataList= []
+l =[]
 class MainGUI:
 
     #이전 버튼을 누르면 한칸씩 출력
@@ -73,6 +74,7 @@ class MainGUI:
         print(req.status, req.reason)
 
         DataList.clear()
+        l.clear()
 
         if req.status == 200:
             DocArticle = req.read().decode('UTF-8')
@@ -92,24 +94,33 @@ class MainGUI:
             for obj_5 in obj_4:
                 if obj_5.nodeName == "item":
                     subitems = obj_5.childNodes
-                    print(subitems[1].firstChild.nodeValue)
-                    DataList.append((subitems[0].firstChild.nodeValue, subitems[3].firstChild.nodeValue,subitems[4].firstChild.nodeValue, subitems[6].firstChild.nodeValue))
+                    for atom in subitems:
+                        if atom.nodeName in "addr":
+                            DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "fdPrdtNm":
+                            DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "fdSbjt":
+                            DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "fdYmd":
+                            DataList.append(atom.firstChild.nodeValue)
 
-            for i in range(len(DataList)):
+                    print(DataList)
+
+            for i in range(10):
                 self.Item_RenderText.insert(INSERT, "[")
                 self.Item_RenderText.insert(INSERT, i + 1)
                 self.Item_RenderText.insert(INSERT, "] ")
                 self.Item_RenderText.insert(INSERT, "주소: ")
-                self.Item_RenderText.insert(INSERT, DataList[i][0])
+                self.Item_RenderText.insert(INSERT, DataList[0+i*4])
                 self.Item_RenderText.insert(INSERT, "\n")
                 self.Item_RenderText.insert(INSERT, "습득물: ")
-                self.Item_RenderText.insert(INSERT, DataList[i][1])
+                self.Item_RenderText.insert(INSERT, DataList[1+i*4])
                 self.Item_RenderText.insert(INSERT, "\n")
                 self.Item_RenderText.insert(INSERT, "상세내용: ")
-                self.Item_RenderText.insert(INSERT, DataList[i][2])
+                self.Item_RenderText.insert(INSERT, DataList[2+i*4])
                 self.Item_RenderText.insert(INSERT, "\n")
                 self.Item_RenderText.insert(INSERT, "날짜: ")
-                self.Item_RenderText.insert(INSERT, DataList[i][3])
+                self.Item_RenderText.insert(INSERT, DataList[3+i*4])
                 self.Item_RenderText.insert(INSERT, "\n\n")
 
     def v(self):
