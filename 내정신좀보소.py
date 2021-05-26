@@ -86,7 +86,10 @@ class MainGUI:
         self.window.geometry("760x760")
         self.window['bg'] = '#a9d4df'
 
+<<<<<<< HEAD
         #이미지 선언
+=======
+>>>>>>> 241464980586dc8983b801b0541f60efab63af2d
         self.TempFont = font.Font(size=16, weight='bold', family='Consolas')
         self.image_title = PhotoImage(file='image/title.PNG')
         self.image_logo = PhotoImage(file='image/logo.PNG')
@@ -96,22 +99,37 @@ class MainGUI:
         self.image_oneright = PhotoImage(file='image/2.PNG')
         self.imageLabel = Label(self.window, image= self.image_title)
         self.imageLabel['bg'] = '#a9d4df'
+<<<<<<< HEAD
 
         #위쪽 이미지
+=======
+>>>>>>> 241464980586dc8983b801b0541f60efab63af2d
         self.imageLabel.pack()
         self.imageLabel.place(x=150, y=10)
         self.imageLabel2 = Label(self.window, image=self.image_logo)
+<<<<<<< HEAD
         self.imageLabel2['bg'] = '#a9d4df'
+=======
+        self.imageLabel2['bg']= '#a9d4df'
+>>>>>>> 241464980586dc8983b801b0541f60efab63af2d
         self.imageLabel2.pack()
         self.imageLabel2.place(x=550, y=10)
         self.type = IntVar()
 
+<<<<<<< HEAD
         self.r1 = Radiobutton(self.window, text='습득물', variable=self.type, value=1, command=self.v)
+=======
+        self.r1 = Radiobutton(self.window,text='습득물',variable=self.type,value=1,command=self.v)
+>>>>>>> 241464980586dc8983b801b0541f60efab63af2d
         self.r1['bg'] = '#a9d4df'
         self.r1.pack()
         self.r1.place(x=200, y=100)
 
+<<<<<<< HEAD
         self.r2 = Radiobutton(self.window, text='분실물', variable=self.type, value=2, command=self.v)
+=======
+        self.r2 = Radiobutton(self.window,text='분실물', variable=self.type, value=2,command=self.v)
+>>>>>>> 241464980586dc8983b801b0541f60efab63af2d
         self.r2['bg'] = '#a9d4df'
         self.r2.pack()
         self.r2.place(x=300, y=100)
@@ -136,6 +154,7 @@ class MainGUI:
         self.item_InputLabel.place(x=400, y=230)
 
         self.SearchButton = Button(self.window, font=self.TempFont, text="검색", command=self.SearchButtonAction)
+        self.SearchButton['bg'] = '#a9d4df'
         self.SearchButton.pack()
         self.SearchButton.place(x=600, y=230)
 
@@ -158,6 +177,7 @@ class MainGUI:
 
         self.Detail_RenderText.configure(state='disabled')
 
+<<<<<<< HEAD
         self.previous = Button(self.window, image=self.image_oneleft, command=self.PreButtonAction())
         self.previous['bg'] = '#a9d4df'
         self.previous.pack()
@@ -170,12 +190,19 @@ class MainGUI:
 
         #상세 정보 버튼
         self.Detail_SearchButton = Button(self.window,width=28, font=self.TempFont, text="상세 정보", command=self.Detail_ButtonAction)
+=======
+        self.Detail_SearchButton = Button(self.window,width=30, font=self.TempFont, text="상세 정보", command=self.Detail_ButtonAction)
+>>>>>>> 241464980586dc8983b801b0541f60efab63af2d
         self.Detail_SearchButton['bg'] = '#a9d4df'
         self.Detail_SearchButton.pack()
         self.Detail_SearchButton.place(x=25, y=540)
 
         self.map_Button = Button(self.window, image=self.image_map, command=self.MapButtonAction)
+<<<<<<< HEAD
         self.map_Button['bg'] = '#a9d4df'
+=======
+        self.map_Button['bg'] ='#a9d4df'
+>>>>>>> 241464980586dc8983b801b0541f60efab63af2d
         self.map_Button.pack()
         self.map_Button.place(x=400, y=640)
 
