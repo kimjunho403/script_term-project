@@ -118,8 +118,6 @@ class MainGUI:
                             detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "lstSbjt":  # 분실물
                             detail_DataList.append(atom.firstChild.nodeValue)
-                        if atom.nodeName in "lstYmd":  # 날짜
-                            detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "orgNm":  # 경찰서
                             detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "tel":  # 전화번호
@@ -137,14 +135,11 @@ class MainGUI:
                 self.Detail_RenderText.insert(INSERT, "분실물: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[2])
                 self.Detail_RenderText.insert(INSERT, "\n")
-                self.Detail_RenderText.insert(INSERT, "날짜: ")
+                self.Detail_RenderText.insert(INSERT, "관할 경찰서: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[3])
                 self.Detail_RenderText.insert(INSERT, "\n")
-                self.Detail_RenderText.insert(INSERT, "관할 경찰서: ")
-                self.Detail_RenderText.insert(INSERT, detail_DataList[4])
-                self.Detail_RenderText.insert(INSERT, "\n")
                 self.Detail_RenderText.insert(INSERT, "전화번호: ")
-                self.Detail_RenderText.insert(INSERT, detail_DataList[5])
+                self.Detail_RenderText.insert(INSERT, detail_DataList[4])
                 self.Detail_RenderText.insert(INSERT, "\n\n")
 
     def Show_Founddetail(self):
@@ -185,8 +180,6 @@ class MainGUI:
                             detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "fdPrdtNm":  # 물품명
                             detail_DataList.append(atom.firstChild.nodeValue)
-                        if atom.nodeName in "fdYmd":  # 날짜
-                            detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "tel":  # 전화번호
                             detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "uniq":  # 내용
@@ -210,13 +203,10 @@ class MainGUI:
                 self.Detail_RenderText.insert(INSERT, "물품명: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[4])
                 self.Detail_RenderText.insert(INSERT, "\n")
-                self.Detail_RenderText.insert(INSERT, "날짜: ")
+                self.Detail_RenderText.insert(INSERT, "전화번호: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[5])
                 self.Detail_RenderText.insert(INSERT, "\n")
-                self.Detail_RenderText.insert(INSERT, "전화번호: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[6])
-                self.Detail_RenderText.insert(INSERT, "\n")
-                self.Detail_RenderText.insert(INSERT, detail_DataList[7])
                 self.Detail_RenderText.insert(INSERT, "\n\n")
 
     def SearchButtonAction(self):
