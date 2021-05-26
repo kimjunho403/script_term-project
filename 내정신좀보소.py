@@ -53,9 +53,72 @@ class MainGUI:
 
         self.Detail_RenderText.configure(state='normal')
         self.Detail_RenderText.delete(0.0, END)
-        self.Show_detail()
+        if self.is_foundArticle ==True:
+            self.Show_Founddetail()
+        else:
+            self.Show_Lostdetail()
+    def Show_Lostdetail(self):
+        import urllib
+        import http.client
+        from xml.dom.minidom import parse, parseString
 
-    def Show_detail(self):
+        conn = http.client.HTTPConnection("apis.data.go.kr")
+        conn.request("GET",
+                     "/1320000/LostGoodsInfoInqireService/getLostGoodsDetailInfo?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&ATC_ID=L2018120100000706")
+        req = conn.getresponse()
+
+        if req.status == 200:
+            DocArticle = req.read().decode('UTF-8')
+            print(DocArticle)
+            if DocArticle == None:
+                print("에러")
+            else:
+                parsedata = parseString(DocArticle)
+                items = parsedata.childNodes
+                item = items[0].childNodes
+            for obj in item:
+                if obj.nodeName == "body":
+                    obj_2 = obj.childNodes
+            for obj_3 in obj_2:
+                if obj_3.nodeName == "item":
+                    subitems = obj_3.childNodes
+                    for atom in subitems:
+                        if atom.nodeName in "lstFilePathImg":  # 이미지
+                            detail_DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "lstPlace":  # 분실장소
+                            detail_DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "lstSbjt":  # 분실물
+                            detail_DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "lstYmd":  # 날짜
+                            detail_DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "orgNm":  # 경찰서
+                            detail_DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "tel":  # 전화번호
+                            detail_DataList.append(atom.firstChild.nodeValue)
+
+                self.Detail_RenderText.insert(INSERT, "[")
+                self.Detail_RenderText.insert(INSERT, 1)
+                self.Detail_RenderText.insert(INSERT, "] ")
+                self.Detail_RenderText.insert(INSERT, "분실물 사진: ")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[0])
+                self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, "분실한 장소: ")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[1])
+                self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, "분실물: ")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[2])
+                self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, "날짜: ")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[3])
+                self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, "관할 경찰서: ")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[4])
+                self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, "전화번호: ")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[5])
+                self.Detail_RenderText.insert(INSERT, "\n\n")
+
+    def Show_Founddetail(self):
         import urllib
         import http.client
         from xml.dom.minidom import parse, parseString
