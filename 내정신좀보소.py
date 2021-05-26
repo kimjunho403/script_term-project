@@ -5,7 +5,9 @@ import tkinter.messagebox
 import tkinter.ttk
 
 DataList= []
+detail_DataList = []
 l =[]
+d_l= []
 class MainGUI:
 
     #이전 버튼을 누르면 한칸씩 출력
@@ -47,7 +49,81 @@ class MainGUI:
     def RenderText(self):
         pass
     def Detail_ButtonAction(self):
-        pass
+        from urllib import parse
+
+        self.Detail_RenderText.configure(state='normal')
+        self.Detail_RenderText.delete(0.0, END)
+        self.Show_detail()
+
+    def Show_detail(self):
+        import urllib
+        import http.client
+        from xml.dom.minidom import parse, parseString
+
+        conn = http.client.HTTPConnection("apis.data.go.kr")
+        conn.request("GET",
+                     "/1320000/LosfundInfoInqireService/getLosfundDetailInfo?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&ATC_ID=" + "F2021052500002919" + "&FD_SN=1")
+        req = conn.getresponse()
+
+        if req.status == 200:
+            DocArticle = req.read().decode('UTF-8')
+            print(DocArticle)
+            if DocArticle == None:
+                print("에러")
+            else:
+                parsedata = parseString(DocArticle)
+                items = parsedata.childNodes
+                item = items[0].childNodes
+            for obj in item:
+                if obj.nodeName == "body":
+                    obj_2 = obj.childNodes
+            for obj_3 in obj_2:
+                if obj_3.nodeName == "item":
+                    subitems = obj_3.childNodes
+                    for atom in subitems:
+                        if atom.nodeName in "csteSteNm":  # 보관상태
+                            detail_DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "depPlace":  # 보관 경찰서
+                            detail_DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "fdFilePathImg":  # 이미지
+                            detail_DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "fdPlace":  # 습득 장소
+                            detail_DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "fdPrdtNm":  # 물품명
+                            detail_DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "fdYmd":  # 날짜
+                            detail_DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "tel":  # 전화번호
+                            detail_DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "uniq":  # 내용
+                            detail_DataList.append(atom.firstChild.nodeValue)
+
+                self.Detail_RenderText.insert(INSERT, "[")
+                self.Detail_RenderText.insert(INSERT, 1)
+                self.Detail_RenderText.insert(INSERT, "] ")
+                self.Detail_RenderText.insert(INSERT, "보관상태: ")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[0])
+                self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, "경찰서: ")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[1])
+                self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, "이미지: ")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[2])
+                self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, "습득 장소: ")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[3])
+                self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, "물품명: ")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[4])
+                self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, "날짜: ")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[5])
+                self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, "전화번호: ")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[6])
+                self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[7])
+                self.Detail_RenderText.insert(INSERT, "\n\n")
 
     def SearchButtonAction(self):
         from urllib import parse
@@ -58,9 +134,75 @@ class MainGUI:
 
         self.item_e = parse.quote(self.item_InputLabel.get())
         self.area_e = parse.quote(self.area_InputLabel.get())
-        self.SearchFoundArticle()
 
-        self.Item_RenderText.configure(state='disabled')
+        if self.is_foundArticle ==True:#습득물
+            self.SearchFoundArticle()
+        elif self.is_foundArticle  ==False:
+            self.SearchLostArticle()
+
+
+
+        #self.Item_RenderText.configure(state='disabled')
+    def SearchLostArticle(self):
+        import urllib
+        import http.client
+        from xml.dom.minidom import parse, parseString
+
+        conn = http.client.HTTPConnection("apis.data.go.kr")
+        conn.request("GET",
+                     "/1320000/LostGoodsInfoInqireService/getLostGoodsInfoAccTpNmCstdyPlace?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&LST_PLACE="+self.area_e+"&LST_PRDT_NM="+self.item_e + "&pageNo="+str(self.pageNum)+"&numOfRows=10")
+        req = conn.getresponse()
+        print(req.status, req.reason)
+
+        DataList.clear()
+        l.clear()
+
+        if req.status == 200:
+            DocArticle = req.read().decode('UTF-8')
+            print(DocArticle)
+            if DocArticle == None:
+                print("에러")
+            else:
+                parsedata = parseString(DocArticle)
+                items = parsedata.childNodes
+                item = items[0].childNodes
+            for obj in item:
+                if obj.nodeName == "body":
+                    obj_2 = obj.childNodes
+            for obj_3 in obj_2:
+                if obj_3.nodeName == "items":
+                    obj_4 = obj_3.childNodes
+            for obj_5 in obj_4:
+                if obj_5.nodeName == "item":
+                    subitems = obj_5.childNodes
+                    for atom in subitems:
+                        if atom.nodeName in "lstPlace":
+                            DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "lstPrdtNm":
+                            DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "lstSbjt":
+                            DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "lstYmd":
+                            DataList.append(atom.firstChild.nodeValue)
+
+                    print(DataList)
+
+            for i in range(len(DataList) // 4):
+                self.Item_RenderText.insert(INSERT, "[")
+                self.Item_RenderText.insert(INSERT, i + 1)
+                self.Item_RenderText.insert(INSERT, "] ")
+                self.Item_RenderText.insert(INSERT, "주소: ")
+                self.Item_RenderText.insert(INSERT, DataList[0 + i * 4])
+                self.Item_RenderText.insert(INSERT, "\n")
+                self.Item_RenderText.insert(INSERT, "습득물: ")
+                self.Item_RenderText.insert(INSERT, DataList[1 + i * 4])
+                self.Item_RenderText.insert(INSERT, "\n")
+                self.Item_RenderText.insert(INSERT, "상세내용: ")
+                self.Item_RenderText.insert(INSERT, DataList[2 + i * 4])
+                self.Item_RenderText.insert(INSERT, "\n")
+                self.Item_RenderText.insert(INSERT, "날짜: ")
+                self.Item_RenderText.insert(INSERT, DataList[3 + i * 4])
+                self.Item_RenderText.insert(INSERT, "\n\n")
 
     def SearchFoundArticle(self):
         import urllib
@@ -103,34 +245,43 @@ class MainGUI:
                             DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "fdYmd":
                             DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "atcId":
+                            d_l.append(atom.firstChild.nodeValue)
 
                     print(DataList)
 
-            for i in range(10):
+            for i in range(len(DataList)//4):
                 self.Item_RenderText.insert(INSERT, "[")
                 self.Item_RenderText.insert(INSERT, i + 1)
                 self.Item_RenderText.insert(INSERT, "] ")
                 self.Item_RenderText.insert(INSERT, "주소: ")
-                self.Item_RenderText.insert(INSERT, DataList[0+i*4])
+                self.Item_RenderText.insert(INSERT, DataList[0 + i * 4])
                 self.Item_RenderText.insert(INSERT, "\n")
                 self.Item_RenderText.insert(INSERT, "습득물: ")
-                self.Item_RenderText.insert(INSERT, DataList[1+i*4])
+                self.Item_RenderText.insert(INSERT, DataList[1 + i * 4])
                 self.Item_RenderText.insert(INSERT, "\n")
                 self.Item_RenderText.insert(INSERT, "상세내용: ")
-                self.Item_RenderText.insert(INSERT, DataList[2+i*4])
+                self.Item_RenderText.insert(INSERT, DataList[2 + i * 4])
                 self.Item_RenderText.insert(INSERT, "\n")
                 self.Item_RenderText.insert(INSERT, "날짜: ")
-                self.Item_RenderText.insert(INSERT, DataList[3+i*4])
+                self.Item_RenderText.insert(INSERT, DataList[3 + i * 4])
                 self.Item_RenderText.insert(INSERT, "\n\n")
 
+
+
     def v(self):
-        pass
+        if self.type.get() ==1:
+            self.is_foundArticle = True
+        else:
+            self.is_foundArticle =False
+
     def __init__(self):
         self.window = Tk("내정신좀보소!")
         self.window.geometry("760x760")
         self.window['bg'] = '#a9d4df'
 
         self.pageNum =1
+        self.is_foundArticle = True
 
         #이미지 선언
         self.TempFont = font.Font(size=16, weight='bold', family='Consolas')
