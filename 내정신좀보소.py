@@ -4,6 +4,11 @@ from tkinter.simpledialog import *
 import tkinter.messagebox
 import tkinter.ttk
 
+import tkinter as tk
+from pandas import DataFrame
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 DataList= []
 detail_DataList = []
 l =[]
@@ -118,6 +123,8 @@ class MainGUI:
                             detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "lstSbjt":  # 분실물
                             detail_DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "lstYmd":  # 날짜
+                            detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "orgNm":  # 경찰서
                             detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "tel":  # 전화번호
@@ -135,11 +142,14 @@ class MainGUI:
                 self.Detail_RenderText.insert(INSERT, "분실물: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[2])
                 self.Detail_RenderText.insert(INSERT, "\n")
-                self.Detail_RenderText.insert(INSERT, "관할 경찰서: ")
+                self.Detail_RenderText.insert(INSERT, "날짜: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[3])
                 self.Detail_RenderText.insert(INSERT, "\n")
-                self.Detail_RenderText.insert(INSERT, "전화번호: ")
+                self.Detail_RenderText.insert(INSERT, "관할 경찰서: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[4])
+                self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, "전화번호: ")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[5])
                 self.Detail_RenderText.insert(INSERT, "\n\n")
 
     def Show_Founddetail(self):
@@ -180,6 +190,8 @@ class MainGUI:
                             detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "fdPrdtNm":  # 물품명
                             detail_DataList.append(atom.firstChild.nodeValue)
+                        if atom.nodeName in "fdYmd":  # 날짜
+                            detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "tel":  # 전화번호
                             detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "uniq":  # 내용
@@ -203,10 +215,13 @@ class MainGUI:
                 self.Detail_RenderText.insert(INSERT, "물품명: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[4])
                 self.Detail_RenderText.insert(INSERT, "\n")
-                self.Detail_RenderText.insert(INSERT, "전화번호: ")
+                self.Detail_RenderText.insert(INSERT, "날짜: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[5])
                 self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, "전화번호: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[6])
+                self.Detail_RenderText.insert(INSERT, "\n")
+                self.Detail_RenderText.insert(INSERT, detail_DataList[7])
                 self.Detail_RenderText.insert(INSERT, "\n\n")
 
     def SearchButtonAction(self):
@@ -403,6 +418,9 @@ class MainGUI:
 
         frame1 = tkinter.Frame(self.window)
         notebook.add(frame1, text="메인 화면")
+
+        self.canvas = Canvas(frame1, width=700, height=600, bg='#a9d4df')
+        self.canvas.pack()
         #lab1=Label(self.window, text='', font=self.TempFont)
         #lab1.place(x=380,y=200)
 
@@ -485,40 +503,36 @@ class MainGUI:
         self.email_Button.pack()
         self.email_Button.place(x=580, y=640)
 
+        # 두번째 리스트
         frame2 = tkinter.Frame(self.window)
-        self.noteBook=notebook.add(frame2, text="최근 들어온 물품들")
-        #self.noteBook.configure(bg='#a9d4df')
+        notebook.add(frame2, text="최근 들어온 물품들")
 
-        label2 = tkinter.Label(frame2, text="페이지2의 내용")
+        label2 = tkinter.Label(frame2, text="일주일동안 들어온 물품 리스트")
         label2.pack()
 
-        width = 600
-        height = 500
+        #self.canvas = Canvas(frame2, width=700, height=600, bg='#a9d4df')
+        #self.canvas.pack()
 
-        maxheight = 100  # 높이 변경 변수
-        startpoint = 50  # 그래프 시작 장소 변수
+        # 그래프 그리기
 
-        barWidth = (width - 40) / 20
+        data2 = {'Category': ['Wallet', 'Phone', 'Bag', 'Jewllery', 'Etc'],
+                 'Count': [10, 5, 8, 7.2, 15]
+                 }
+        df2 = DataFrame(data2, columns=['Category', 'Count'])
 
-        self.counts = [x for x in range(1, 21)]
-        self.maxCount = max(self.counts)
-
-        self.canvas = Canvas(frame2, width=700, height=height, bg='#a9d4df')
+        self.canvas = Canvas(frame2, width=700, height=600, bg='#a9d4df')
         self.canvas.pack()
 
-        maxi = 20
-        self.canvas.create_rectangle(50, height - 20 - (height - maxheight),
-                                     20 + (maxi + 1) * barWidth, height - 20, tag='histogram')
+        figure2 = plt.Figure(figsize=(6, 4), dpi=100)
+        #plt.xlabel('카테고리', fontproperties=fontprop)
+        #plt.ylabel('갯수', fontproperties=fontprop)
 
-        for i in range(20):
-            self.canvas.create_rectangle(startpoint + i * barWidth + 10,
-                                         height - 20 - (height - maxheight) * self.counts[i] / self.maxCount,
-                                         startpoint + (i + 1) * barWidth, height - 20, tag='histogram')
-            self.canvas.create_text(startpoint + i * barWidth + 10, height - 10, text=chr(ord('a') + i),
-                                    tag='histogram')
-            self.canvas.create_text(startpoint + i * barWidth + 10,
-                                    height - 20 - (height - 80) * self.counts[i] / self.maxCount - 5,
-                                    text=str(self.counts[i]), tag='histogram')
+        ax2 = figure2.add_subplot(111)
+        line2 = FigureCanvasTkAgg(figure2, self.canvas)
+        line2.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
+        df2 = df2[['Category', 'Count']].groupby('Category').sum()
+        df2.plot(kind='line', legend=True, ax=ax2, color='b', marker='o', fontsize=10)
+        ax2.set_title('Recent Commodities')
 
         self.window.mainloop()
 
