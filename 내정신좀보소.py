@@ -10,12 +10,34 @@ class MainGUI:
     #이전 버튼을 누르면 한칸씩 출력
     def PreButtonAction(self):
         # 만약 가장 앞이면 아무일도 일어나지 않는다.
-        pass
+        if self.pageNum >1:
+            self.pageNum -= 1
+
+        from urllib import parse
+
+        self.Item_RenderText.configure(state='normal')
+        self.Item_RenderText.delete(0.0, END)
+
+        self.item_e = parse.quote(self.item_InputLabel.get())
+        self.area_e = parse.quote(self.area_InputLabel.get())
+        self.SearchFoundArticle()
+
+        self.Item_RenderText.configure(state='disabled')
 
     #다음 버튼을 누르면 한칸씩 전진
     def NextButtonAction(self):
-        # 만약 가장 뒤면 아무일도 일어나지 않는다.
-        pass
+        from urllib import parse
+
+        self.pageNum += 1
+
+        self.Item_RenderText.configure(state='normal')
+        self.Item_RenderText.delete(0.0, END)
+
+        self.item_e = parse.quote(self.item_InputLabel.get())
+        self.area_e = parse.quote(self.area_InputLabel.get())
+        self.SearchFoundArticle()
+
+        self.Item_RenderText.configure(state='disabled')
 
     def MapButtonAction(self):
         pass
@@ -27,7 +49,14 @@ class MainGUI:
         pass
 
     def SearchButtonAction(self):
+        from urllib import parse
+        self.pageNum =1
+
         self.Item_RenderText.configure(state='normal')
+        self.Item_RenderText.delete(0.0, END)
+
+        self.item_e = parse.quote(self.item_InputLabel.get())
+        self.area_e = parse.quote(self.area_InputLabel.get())
         self.SearchFoundArticle()
 
         self.Item_RenderText.configure(state='disabled')
@@ -36,16 +65,18 @@ class MainGUI:
         import urllib
         import http.client
         from xml.dom.minidom import parse, parseString
+
         conn = http.client.HTTPConnection("apis.data.go.kr")
         conn.request("GET",
-                     "/1320000/LosfundInfoInqireService/getLosfundInfoAccToLc?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&PRDT_NM=%EC%A7%80%EA%B0%91&ADDR=%EA%B3%A0%EC%96%91&pageNo=1&numOfRows=10")
+                     "/1320000/LosfundInfoInqireService/getLosfundInfoAccToLc?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&PRDT_NM="+self.item_e +"&ADDR="+self.area_e+"&pageNo="+str(self.pageNum)+"&numOfRows=10")
         req = conn.getresponse()
         print(req.status, req.reason)
 
         DataList.clear()
 
         if req.status == 200:
-            DocArticle = req.read().decode('utf-8')
+            DocArticle = req.read().decode('UTF-8')
+            print(DocArticle)
             if DocArticle == None:
                 print("에러")
             else:
@@ -62,8 +93,7 @@ class MainGUI:
                 if obj_5.nodeName == "item":
                     subitems = obj_5.childNodes
                     print(subitems[1].firstChild.nodeValue)
-                    DataList.append((subitems[0].firstChild.nodeValue, subitems[4].firstChild.nodeValue,
-                                     subitems[5].firstChild.nodeValue, subitems[8].firstChild.nodeValue))
+                    DataList.append((subitems[0].firstChild.nodeValue, subitems[3].firstChild.nodeValue,subitems[4].firstChild.nodeValue, subitems[6].firstChild.nodeValue))
 
             for i in range(len(DataList)):
                 self.Item_RenderText.insert(INSERT, "[")
@@ -77,6 +107,9 @@ class MainGUI:
                 self.Item_RenderText.insert(INSERT, "\n")
                 self.Item_RenderText.insert(INSERT, "상세내용: ")
                 self.Item_RenderText.insert(INSERT, DataList[i][2])
+                self.Item_RenderText.insert(INSERT, "\n")
+                self.Item_RenderText.insert(INSERT, "날짜: ")
+                self.Item_RenderText.insert(INSERT, DataList[i][3])
                 self.Item_RenderText.insert(INSERT, "\n\n")
 
     def v(self):
@@ -86,10 +119,9 @@ class MainGUI:
         self.window.geometry("760x760")
         self.window['bg'] = '#a9d4df'
 
-<<<<<<< HEAD
+        self.pageNum =1
+
         #이미지 선언
-=======
->>>>>>> 241464980586dc8983b801b0541f60efab63af2d
         self.TempFont = font.Font(size=16, weight='bold', family='Consolas')
         self.image_title = PhotoImage(file='image/title.PNG')
         self.image_logo = PhotoImage(file='image/logo.PNG')
@@ -99,37 +131,22 @@ class MainGUI:
         self.image_oneright = PhotoImage(file='image/2.PNG')
         self.imageLabel = Label(self.window, image= self.image_title)
         self.imageLabel['bg'] = '#a9d4df'
-<<<<<<< HEAD
 
         #위쪽 이미지
-=======
->>>>>>> 241464980586dc8983b801b0541f60efab63af2d
         self.imageLabel.pack()
         self.imageLabel.place(x=150, y=10)
         self.imageLabel2 = Label(self.window, image=self.image_logo)
-<<<<<<< HEAD
         self.imageLabel2['bg'] = '#a9d4df'
-=======
-        self.imageLabel2['bg']= '#a9d4df'
->>>>>>> 241464980586dc8983b801b0541f60efab63af2d
         self.imageLabel2.pack()
         self.imageLabel2.place(x=550, y=10)
         self.type = IntVar()
 
-<<<<<<< HEAD
         self.r1 = Radiobutton(self.window, text='습득물', variable=self.type, value=1, command=self.v)
-=======
-        self.r1 = Radiobutton(self.window,text='습득물',variable=self.type,value=1,command=self.v)
->>>>>>> 241464980586dc8983b801b0541f60efab63af2d
         self.r1['bg'] = '#a9d4df'
         self.r1.pack()
         self.r1.place(x=200, y=100)
 
-<<<<<<< HEAD
         self.r2 = Radiobutton(self.window, text='분실물', variable=self.type, value=2, command=self.v)
-=======
-        self.r2 = Radiobutton(self.window,text='분실물', variable=self.type, value=2,command=self.v)
->>>>>>> 241464980586dc8983b801b0541f60efab63af2d
         self.r2['bg'] = '#a9d4df'
         self.r2.pack()
         self.r2.place(x=300, y=100)
@@ -154,7 +171,6 @@ class MainGUI:
         self.item_InputLabel.place(x=400, y=230)
 
         self.SearchButton = Button(self.window, font=self.TempFont, text="검색", command=self.SearchButtonAction)
-        self.SearchButton['bg'] = '#a9d4df'
         self.SearchButton.pack()
         self.SearchButton.place(x=600, y=230)
 
@@ -177,32 +193,24 @@ class MainGUI:
 
         self.Detail_RenderText.configure(state='disabled')
 
-<<<<<<< HEAD
-        self.previous = Button(self.window, image=self.image_oneleft, command=self.PreButtonAction())
+        self.previous = Button(self.window, image=self.image_oneleft, command=self.PreButtonAction)
         self.previous['bg'] = '#a9d4df'
         self.previous.pack()
         self.previous.place(x=20, y=590)
 
-        self.previous = Button(self.window, image=self.image_oneright, command=self.NextButtonAction())
-        self.previous['bg'] = '#a9d4df'
-        self.previous.pack()
-        self.previous.place(x=250, y=590)
+        self.Next = Button(self.window, image=self.image_oneright, command=self.NextButtonAction)
+        self.Next['bg'] = '#a9d4df'
+        self.Next.pack()
+        self.Next.place(x=250, y=590)
 
         #상세 정보 버튼
         self.Detail_SearchButton = Button(self.window,width=28, font=self.TempFont, text="상세 정보", command=self.Detail_ButtonAction)
-=======
-        self.Detail_SearchButton = Button(self.window,width=30, font=self.TempFont, text="상세 정보", command=self.Detail_ButtonAction)
->>>>>>> 241464980586dc8983b801b0541f60efab63af2d
         self.Detail_SearchButton['bg'] = '#a9d4df'
         self.Detail_SearchButton.pack()
         self.Detail_SearchButton.place(x=25, y=540)
 
         self.map_Button = Button(self.window, image=self.image_map, command=self.MapButtonAction)
-<<<<<<< HEAD
         self.map_Button['bg'] = '#a9d4df'
-=======
-        self.map_Button['bg'] ='#a9d4df'
->>>>>>> 241464980586dc8983b801b0541f60efab63af2d
         self.map_Button.pack()
         self.map_Button.place(x=400, y=640)
 
