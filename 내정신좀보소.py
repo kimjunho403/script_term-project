@@ -236,6 +236,34 @@ class MainGUI:
         label2 = tkinter.Label(frame2, text="페이지2의 내용")
         label2.pack()
 
+        width = 600
+        height = 500
+
+        maxheight = 100  # 높이 변경 변수
+        startpoint = 50  # 그래프 시작 장소 변수
+
+        barWidth = (width - 40) / 20
+
+        self.counts = [x for x in range(1, 21)]
+        self.maxCount = max(self.counts)
+
+        self.canvas = Canvas(frame2, width=700, height=height, bg='#a9d4df')
+        self.canvas.pack()
+
+        maxi = 20
+        self.canvas.create_rectangle(50, height - 20 - (height - maxheight),
+                                     20 + (maxi + 1) * barWidth, height - 20, tag='histogram')
+
+        for i in range(20):
+            self.canvas.create_rectangle(startpoint + i * barWidth + 10,
+                                         height - 20 - (height - maxheight) * self.counts[i] / self.maxCount,
+                                         startpoint + (i + 1) * barWidth, height - 20, tag='histogram')
+            self.canvas.create_text(startpoint + i * barWidth + 10, height - 10, text=chr(ord('a') + i),
+                                    tag='histogram')
+            self.canvas.create_text(startpoint + i * barWidth + 10,
+                                    height - 20 - (height - 80) * self.counts[i] / self.maxCount - 5,
+                                    text=str(self.counts[i]), tag='histogram')
+
         self.window.mainloop()
 
 MainGUI()
