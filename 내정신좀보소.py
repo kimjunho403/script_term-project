@@ -9,8 +9,11 @@ from pandas import DataFrame
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+id = []
 DataList= []
 detail_DataList = []
+add_high=100
+add_wight=100
 l =[]
 d_l= []
 class MainGUI:
@@ -22,6 +25,7 @@ class MainGUI:
             self.pageNum -= 1
 
         from urllib import parse
+        id.clear()
 
         self.Item_RenderText.configure(state='normal')
         self.Item_RenderText.delete(0.0, END)
@@ -35,6 +39,7 @@ class MainGUI:
     #다음 버튼을 누르면 한칸씩 전진
     def NextButtonAction(self):
         from urllib import parse
+        id.clear()
 
         self.pageNum += 1
 
@@ -52,6 +57,7 @@ class MainGUI:
             self.pageNum -= 5
 
         from urllib import parse
+        id.clear()
 
         self.Item_RenderText.configure(state='normal')
         self.Item_RenderText.delete(0.0, END)
@@ -63,6 +69,7 @@ class MainGUI:
         self.Item_RenderText.configure(state='disabled')
     def DoubleNextButtonAction(self):
         from urllib import parse
+        id.clear()
 
         self.pageNum += 5
 
@@ -84,8 +91,10 @@ class MainGUI:
     def Detail_ButtonAction(self):
         from urllib import parse
 
+
         self.Detail_RenderText.configure(state='normal')
         self.Detail_RenderText.delete(0.0, END)
+
         if self.is_foundArticle ==True:
             self.Show_Founddetail()
         else:
@@ -97,7 +106,7 @@ class MainGUI:
 
         conn = http.client.HTTPConnection("apis.data.go.kr")
         conn.request("GET",
-                     "/1320000/LostGoodsInfoInqireService/getLostGoodsDetailInfo?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&ATC_ID=L2018120100000706")
+                     "/1320000/LostGoodsInfoInqireService/getLostGoodsDetailInfo?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&ATC_ID" + id[int(self.Detail_SearchEntry.get())-1])
         req = conn.getresponse()
 
         detail_DataList.clear()
@@ -123,8 +132,6 @@ class MainGUI:
                             detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "lstSbjt":  # 분실물
                             detail_DataList.append(atom.firstChild.nodeValue)
-                        if atom.nodeName in "lstYmd":  # 날짜
-                            detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "orgNm":  # 경찰서
                             detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "tel":  # 전화번호
@@ -142,14 +149,11 @@ class MainGUI:
                 self.Detail_RenderText.insert(INSERT, "분실물: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[2])
                 self.Detail_RenderText.insert(INSERT, "\n")
-                self.Detail_RenderText.insert(INSERT, "날짜: ")
+                self.Detail_RenderText.insert(INSERT, "관할 경찰서: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[3])
                 self.Detail_RenderText.insert(INSERT, "\n")
-                self.Detail_RenderText.insert(INSERT, "관할 경찰서: ")
-                self.Detail_RenderText.insert(INSERT, detail_DataList[4])
-                self.Detail_RenderText.insert(INSERT, "\n")
                 self.Detail_RenderText.insert(INSERT, "전화번호: ")
-                self.Detail_RenderText.insert(INSERT, detail_DataList[5])
+                self.Detail_RenderText.insert(INSERT, detail_DataList[4])
                 self.Detail_RenderText.insert(INSERT, "\n\n")
 
     def Show_Founddetail(self):
@@ -157,9 +161,10 @@ class MainGUI:
         import http.client
         from xml.dom.minidom import parse, parseString
 
+
         conn = http.client.HTTPConnection("apis.data.go.kr")
         conn.request("GET",
-                     "/1320000/LosfundInfoInqireService/getLosfundDetailInfo?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&ATC_ID=" + "F2021052500002919" + "&FD_SN=1")
+                     "/1320000/LosfundInfoInqireService/getLosfundDetailInfo?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&ATC_ID=" + id[int(self.Detail_SearchEntry.get())-1] + "&FD_SN=1")
         req = conn.getresponse()
 
         detail_DataList.clear()
@@ -190,8 +195,6 @@ class MainGUI:
                             detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "fdPrdtNm":  # 물품명
                             detail_DataList.append(atom.firstChild.nodeValue)
-                        if atom.nodeName in "fdYmd":  # 날짜
-                            detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "tel":  # 전화번호
                             detail_DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "uniq":  # 내용
@@ -215,18 +218,16 @@ class MainGUI:
                 self.Detail_RenderText.insert(INSERT, "물품명: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[4])
                 self.Detail_RenderText.insert(INSERT, "\n")
-                self.Detail_RenderText.insert(INSERT, "날짜: ")
+                self.Detail_RenderText.insert(INSERT, "전화번호: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[5])
                 self.Detail_RenderText.insert(INSERT, "\n")
-                self.Detail_RenderText.insert(INSERT, "전화번호: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[6])
-                self.Detail_RenderText.insert(INSERT, "\n")
-                self.Detail_RenderText.insert(INSERT, detail_DataList[7])
                 self.Detail_RenderText.insert(INSERT, "\n\n")
 
     def SearchButtonAction(self):
         from urllib import parse
         self.pageNum =1
+        id.clear()
 
         self.Item_RenderText.configure(state='normal')
         self.Item_RenderText.delete(0.0, END)
@@ -241,7 +242,7 @@ class MainGUI:
 
 
 
-        #self.Item_RenderText.configure(state='disabled')
+        self.Item_RenderText.configure(state='disabled')
     def SearchLostArticle(self):
         import urllib
         import http.client
@@ -252,6 +253,7 @@ class MainGUI:
                      "/1320000/LostGoodsInfoInqireService/getLostGoodsInfoAccTpNmCstdyPlace?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&LST_PLACE="+self.area_e+"&LST_PRDT_NM="+self.item_e + "&pageNo="+str(self.pageNum)+"&numOfRows=10")
         req = conn.getresponse()
         print(req.status, req.reason)
+
 
         DataList.clear()
         l.clear()
@@ -274,6 +276,8 @@ class MainGUI:
                 if obj_5.nodeName == "item":
                     subitems = obj_5.childNodes
                     for atom in subitems:
+                        if atom.nodeName in "atcId":  # 코드
+                            id.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "lstPlace":
                             DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "lstPrdtNm":
@@ -291,7 +295,7 @@ class MainGUI:
                 self.Item_RenderText.insert(INSERT, "주소: ")
                 self.Item_RenderText.insert(INSERT, DataList[0 + i * 4])
                 self.Item_RenderText.insert(INSERT, "\n")
-                self.Item_RenderText.insert(INSERT, "습득물: ")
+                self.Item_RenderText.insert(INSERT, "분실물: ")
                 self.Item_RenderText.insert(INSERT, DataList[1 + i * 4])
                 self.Item_RenderText.insert(INSERT, "\n")
                 self.Item_RenderText.insert(INSERT, "상세내용: ")
@@ -300,6 +304,7 @@ class MainGUI:
                 self.Item_RenderText.insert(INSERT, "날짜: ")
                 self.Item_RenderText.insert(INSERT, DataList[3 + i * 4])
                 self.Item_RenderText.insert(INSERT, "\n\n")
+
 
     def SearchFoundArticle(self):
         import urllib
@@ -334,6 +339,8 @@ class MainGUI:
                 if obj_5.nodeName == "item":
                     subitems = obj_5.childNodes
                     for atom in subitems:
+                        if atom.nodeName in "atcId":#코드
+                            id.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "addr":
                             DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "fdPrdtNm":
@@ -342,11 +349,11 @@ class MainGUI:
                             DataList.append(atom.firstChild.nodeValue)
                         if atom.nodeName in "fdYmd":
                             DataList.append(atom.firstChild.nodeValue)
-                        if atom.nodeName in "atcId":
-                            d_l.append(atom.firstChild.nodeValue)
+
 
 
             for i in range(len(DataList)//4):
+
                 self.Item_RenderText.insert(INSERT, "[")
                 self.Item_RenderText.insert(INSERT, i + 1)
                 self.Item_RenderText.insert(INSERT, "] ")
@@ -362,6 +369,7 @@ class MainGUI:
                 self.Item_RenderText.insert(INSERT, "날짜: ")
                 self.Item_RenderText.insert(INSERT, DataList[3 + i * 4])
                 self.Item_RenderText.insert(INSERT, "\n\n")
+
 
 
 
@@ -476,22 +484,15 @@ class MainGUI:
         self.double_Next.pack()
         self.double_Next.place(x=300, y=590)
 
-        #라벨 테스트
-        '''
-        self.label = Label(self.window, text="Hidemwlfmewlfmql",width=10,height=5,relief="solid",activebackground = "#a9d4df" )
-        self.label.configure(state = 'normal')
-        self.label.pack()
-        self.label.place(x=300,y=300)
-
-        self.label_2 = Label(self.window, text="Hidemwlfmewlfmql", width=10, height=5)
-        self.label_2.pack()
-        self.label_2.place(x=300, y=500)
-        '''
         #상세 정보 버튼
-        self.Detail_SearchButton = Button(self.window,width=28, font=self.TempFont, text="상세 정보", command=self.Detail_ButtonAction)
+        self.Detail_SearchButton = Button(self.window,width=14, font=self.TempFont, text="상세 정보", command=self.Detail_ButtonAction)
         self.Detail_SearchButton['bg'] = '#a9d4df'
         self.Detail_SearchButton.pack()
-        self.Detail_SearchButton.place(x=25, y=540)
+        self.Detail_SearchButton.place(x=200, y=540)
+
+        self.Detail_SearchEntry = Entry(self.window, font=self.TempFont, width=13, borderwidth=6)
+        self.Detail_SearchEntry.pack()
+        self.Detail_SearchEntry.place(x=25, y=540)
 
         self.map_Button = Button(self.window, image=self.image_map, command=self.MapButtonAction)
         self.map_Button['bg'] = '#a9d4df'
@@ -507,7 +508,7 @@ class MainGUI:
         frame2 = tkinter.Frame(self.window)
         notebook.add(frame2, text="최근 들어온 물품들")
 
-        label2 = tkinter.Label(frame2, text="일주일동안 들어온 물품 리스트")
+        label2 = tkinter.Label(frame2, text="하루동안 들어온 물품 리스트")
         label2.pack()
 
         #self.canvas = Canvas(frame2, width=700, height=600, bg='#a9d4df')
