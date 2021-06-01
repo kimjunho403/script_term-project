@@ -3,6 +3,7 @@ from tkinter import font
 from tkinter.simpledialog import *
 import tkinter.messagebox
 import tkinter.ttk
+from teller import *
 
 import tkinter as tk
 from pandas import DataFrame
@@ -106,7 +107,7 @@ class MainGUI:
 
         conn = http.client.HTTPConnection("apis.data.go.kr")
         conn.request("GET",
-                     "/1320000/LostGoodsInfoInqireService/getLostGoodsDetailInfo?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&ATC_ID" + id[int(self.Detail_SearchEntry.get())-1])
+                     "/1320000/LostGoodsInfoInqireService/getLostGoodsDetailInfo?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&ATC_ID=" + id[int(self.Detail_SearchEntry.get())-1])
         req = conn.getresponse()
 
         detail_DataList.clear()
@@ -138,7 +139,7 @@ class MainGUI:
                             detail_DataList.append(atom.firstChild.nodeValue)
 
                 self.Detail_RenderText.insert(INSERT, "[")
-                self.Detail_RenderText.insert(INSERT, 1)
+                self.Detail_RenderText.insert(INSERT, int(self.Detail_SearchEntry.get()))
                 self.Detail_RenderText.insert(INSERT, "] ")
                 self.Detail_RenderText.insert(INSERT, "분실물 사진: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[0])
@@ -201,7 +202,7 @@ class MainGUI:
                             detail_DataList.append(atom.firstChild.nodeValue)
 
                 self.Detail_RenderText.insert(INSERT, "[")
-                self.Detail_RenderText.insert(INSERT, 1)
+                self.Detail_RenderText.insert(INSERT, int(self.Detail_SearchEntry.get()))
                 self.Detail_RenderText.insert(INSERT, "] ")
                 self.Detail_RenderText.insert(INSERT, "보관상태: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[0])
@@ -536,5 +537,6 @@ class MainGUI:
         ax2.set_title('Recent Commodities')
 
         self.window.mainloop()
+
 
 MainGUI()
