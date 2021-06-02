@@ -38,12 +38,59 @@ from email.mime.text import MIMEText
 id = []
 DataList= []
 detail_DataList = []
+
 add_high=100
 add_wight=100
 l =[]
 d_l= []
 
 class MainGUI:
+
+    def load_recent_info(self):
+        import urllib
+        import http.client
+        from xml.dom.minidom import parse, parseString
+
+        conn = http.client.HTTPConnection("apis.data.go.kr")
+        conn.request("GET",
+                     "/1320000/LostGoodsInfoInqireService/getLostGoodsInfoAccTpNmCstdyPlace?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&numOfRows=100")
+        req = conn.getresponse()
+        print(req.status, req.reason)
+
+        DataList.clear()
+        l.clear()
+
+        if req.status == 200:
+            DocArticle = req.read().decode('UTF-8')
+            if DocArticle == None:
+                print("에러")
+            else:
+                parsedata = parseString(DocArticle)
+                items = parsedata.childNodes
+                item = items[0].childNodes
+            for obj in item:
+                if obj.nodeName == "body":
+                    obj_2 = obj.childNodes
+            for obj_3 in obj_2:
+                if obj_3.nodeName == "items":
+                    obj_4 = obj_3.childNodes
+            for obj_5 in obj_4:
+                if obj_5.nodeName == "item":
+                    subitems = obj_5.childNodes
+                    for atom in subitems:
+                        if atom.nodeName in "prdtClNm":  # 코드
+                            if atom.firstChild.nodeValue.startswith('가방'):
+                                self.kind_list[0] +=1
+                            elif atom.firstChild.nodeValue.startswith('귀금속'):
+                                self.kind_list[1] += 1
+                            elif atom.firstChild.nodeValue.startswith('지갑'):
+                                self.kind_list[2] += 1
+                            elif atom.firstChild.nodeValue.startswith('휴대폰'):
+                                self.kind_list[3] += 1
+                            else:
+                                self.kind_list[4] += 1
+
+
 
     #이전 버튼을 누르면 한칸씩 출력
     def PreButtonAction(self):
@@ -291,8 +338,6 @@ class MainGUI:
                 self.p_address = detail_DataList[1]
                 self.p_where = detail_DataList[3]
                 self.p_what = detail_DataList[4]
-                print(self.p_address)
-                print(self.p_tell)
 
                 # 이미지 출력
                 url = detail_DataList[2]
@@ -464,12 +509,15 @@ class MainGUI:
             self.is_foundArticle =False
 
     def __init__(self):
+
         self.window = Tk("내정신좀보소!")
         self.window.geometry("760x760")
         self.window.configure(bg='#a9d4df')
 
         self.pageNum =1
         self.is_foundArticle = True
+        self.kind_list = [0] * 5
+        self.load_recent_info()
 
         #이미지 선언
         self.TempFont = font.Font(size=16, weight='bold', family='Consolas')
