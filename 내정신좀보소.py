@@ -3,13 +3,38 @@ from tkinter import font
 from tkinter.simpledialog import *
 import tkinter.messagebox
 import tkinter.ttk
-from teller import *
 
+#그래프 관련 임포트
 import tkinter as tk
 from pandas import DataFrame
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+#폰트 관련 임포트
+from matplotlib import font_manager, rc
+from matplotlib import style
+
+font_name = font_manager.FontProperties(fname="c:/Windows/Fonts/malgun.ttf").get_name()
+rc('font', family=font_name)
+style.use('ggplot')
+
+#이미지 불러오기 관련 임포트
+from io import BytesIO
+import urllib
+import urllib.request
+from PIL import Image, ImageTk
+
+#지도 관련 임포트
+import threading
+import sys
+import folium
+from cefpython3 import cefpython as cef
+
+#이미지 관련 임포트
+import smtplib 		  	#Import smtplib
+from email.mime.text import MIMEText
+
+#from teller import *
 id = []
 DataList= []
 detail_DataList = []
@@ -17,6 +42,7 @@ add_high=100
 add_wight=100
 l =[]
 d_l= []
+
 class MainGUI:
 
     #이전 버튼을 누르면 한칸씩 출력
@@ -84,9 +110,24 @@ class MainGUI:
         self.Item_RenderText.configure(state='disabled')
 
     def MapButtonAction(self):
+        window = Tk()
+        Button(window, text='folium 지도', command=Pressed).pack()
+        frame = Frame(window, width=800, height=600)
+        frame.pack()
         pass
     def EmailButtonAction(self):
-        pass
+        s = smtplib.SMTP('smtp.gmail.com', 587)
+        s.starttls()
+        s.login('kimjunho403@gmail.com', 'kin442266') # 여기에 니 이메일하고 주소
+        string_ = '습득(분실) 장소: '+str(self.p_where)+'\n'+'습득(분실)물: '+str(self.p_what)+'\n'+'관할경찰서: '+str(self.p_address)+'\n'+'전화번호: '+str(self.p_tell)
+
+
+        msg = MIMEText(string_)
+        part_html = MIMEText('<br><a href="https://github.com/hyeshinoh/">hyeshin github</a>', 'html')
+        msg['Subject'] = "분실(습득)물 관련 정보 메일입니다."
+        s.sendmail("kimjunho403@gmail.com", "dimond2011@naver.com", msg.as_string())
+
+        s.quit()
     def RenderText(self):
         pass
     def Detail_ButtonAction(self):
@@ -100,6 +141,9 @@ class MainGUI:
             self.Show_Founddetail()
         else:
             self.Show_Lostdetail()
+
+
+
     def Show_Lostdetail(self):
         import urllib
         import http.client
@@ -141,8 +185,21 @@ class MainGUI:
                 self.Detail_RenderText.insert(INSERT, "[")
                 self.Detail_RenderText.insert(INSERT, int(self.Detail_SearchEntry.get()))
                 self.Detail_RenderText.insert(INSERT, "] ")
-                self.Detail_RenderText.insert(INSERT, "분실물 사진: ")
-                self.Detail_RenderText.insert(INSERT, detail_DataList[0])
+                #self.Detail_RenderText.insert(INSERT, "분실물 사진: ")
+                #self.Detail_RenderText.insert(INSERT, detail_DataList[0])
+                #이미지 출력
+                url = detail_DataList[0]
+                with urllib.request.urlopen(url) as u:
+                    raw_data = u.read()
+
+                im2 = Image.open(BytesIO(raw_data))
+                im2 = im2.resize((100, 100))
+                image2 = ImageTk.PhotoImage(im2)
+
+                temp = Label(self.window, image=image2)
+                temp.image = image2
+                temp.place(x=600, y=510)
+
                 self.Detail_RenderText.insert(INSERT, "\n")
                 self.Detail_RenderText.insert(INSERT, "분실한 장소: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[1])
@@ -156,6 +213,11 @@ class MainGUI:
                 self.Detail_RenderText.insert(INSERT, "전화번호: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[4])
                 self.Detail_RenderText.insert(INSERT, "\n\n")
+
+                self.p_tell = detail_DataList[4]
+                self.p_address = detail_DataList[3]
+                self.p_where = detail_DataList[1]
+                self.p_what = detail_DataList[2]
 
     def Show_Founddetail(self):
         import urllib
@@ -210,8 +272,8 @@ class MainGUI:
                 self.Detail_RenderText.insert(INSERT, "경찰서: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[1])
                 self.Detail_RenderText.insert(INSERT, "\n")
-                self.Detail_RenderText.insert(INSERT, "이미지: ")
-                self.Detail_RenderText.insert(INSERT, detail_DataList[2])
+                #self.Detail_RenderText.insert(INSERT, "이미지: ")
+                #self.Detail_RenderText.insert(INSERT, detail_DataList[2])
                 self.Detail_RenderText.insert(INSERT, "\n")
                 self.Detail_RenderText.insert(INSERT, "습득 장소: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[3])
@@ -224,6 +286,27 @@ class MainGUI:
                 self.Detail_RenderText.insert(INSERT, "\n")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[6])
                 self.Detail_RenderText.insert(INSERT, "\n\n")
+
+                self.p_tell =detail_DataList[5]
+                self.p_address = detail_DataList[1]
+                self.p_where = detail_DataList[3]
+                self.p_what = detail_DataList[4]
+                print(self.p_address)
+                print(self.p_tell)
+
+                # 이미지 출력
+                url = detail_DataList[2]
+                with urllib.request.urlopen(url) as u:
+                    raw_data = u.read()
+
+                im2 = Image.open(BytesIO(raw_data))
+                im2 = im2.resize((100, 100))
+                image2 = ImageTk.PhotoImage(im2)
+
+                temp = Label(self.window, image=image2)
+                temp.image = image2
+                temp.place(x=600, y=510)
+                # 이미지 출력 끝
 
     def SearchButtonAction(self):
         from urllib import parse
@@ -509,15 +592,15 @@ class MainGUI:
         frame2 = tkinter.Frame(self.window)
         notebook.add(frame2, text="최근 들어온 물품들")
 
-        label2 = tkinter.Label(frame2, text="하루동안 들어온 물품 리스트")
-        label2.pack()
+        #label2 = tkinter.Label(frame2, text="하루동안 들어온 물품 리스트")
+        #label2.pack()
 
         #self.canvas = Canvas(frame2, width=700, height=600, bg='#a9d4df')
         #self.canvas.pack()
 
         # 그래프 그리기
 
-        data2 = {'Category': ['Wallet', 'Phone', 'Bag', 'Jewllery', 'Etc'],
+        data2 = {'Category': ['.지갑', '.핸드폰', '.가방', '.귀금속', 'Etc'],
                  'Count': [10, 5, 8, 7.2, 15]
                  }
         df2 = DataFrame(data2, columns=['Category', 'Count'])
@@ -534,9 +617,31 @@ class MainGUI:
         line2.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
         df2 = df2[['Category', 'Count']].groupby('Category').sum()
         df2.plot(kind='line', legend=True, ax=ax2, color='b', marker='o', fontsize=10)
-        ax2.set_title('Recent Commodities')
+        ax2.set_title('최근 들어온 물건 품목들')
 
         self.window.mainloop()
 
+# cef모듈로 브라우저 실행
+def showMap(frame):
+    sys.excepthook = cef.ExceptHook
+    window_info = cef.WindowInfo(frame.winfo_id())
+    window_info.SetAsChild(frame.winfo_id(), [0,0,800,600])
+    cef.Initialize()
+    browser = cef.CreateBrowserSync(window_info, url='file:///map.html')
+    cef.MessageLoop()
+
+def Pressed():
+    # 지도 저장
+    # 위도 경도 지정
+    m = folium.Map(location=[37.3402849, 126.7313189], zoom_start=20)#여기서 크기 조정
+    # 마커 지정
+    folium.Marker([37.3402849, 126.7313189], popup='한국산업기술대').add_to(m)
+    # html 파일로 저장
+    m.save('map.html')
+
+    # 브라우저를 위한 쓰레드 생성
+    thread = threading.Thread(target=showMap, args=(frame,))
+    thread.daemon = True
+    thread.start()
 
 MainGUI()
