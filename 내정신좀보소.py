@@ -3,7 +3,7 @@ from tkinter import font
 from tkinter.simpledialog import *
 import tkinter.messagebox
 import tkinter.ttk
-
+import spam
 #그래프 관련 임포트
 import tkinter as tk
 from pandas import DataFrame
@@ -198,7 +198,7 @@ class MainGUI:
 
         conn = http.client.HTTPConnection("apis.data.go.kr")
         conn.request("GET",
-                     "/1320000/LostGoodsInfoInqireService/getLostGoodsDetailInfo?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&ATC_ID=" + id[int(self.Detail_SearchEntry.get())-1])
+                     "/1320000/LostGoodsInfoInqireService/getLostGoodsDetailInfo?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&ATC_ID=" + id[spam.to_int(self.Detail_SearchEntry.get())-1])
         req = conn.getresponse()
 
         detail_DataList.clear()
@@ -230,7 +230,7 @@ class MainGUI:
                             detail_DataList.append(atom.firstChild.nodeValue)
 
                 self.Detail_RenderText.insert(INSERT, "[")
-                self.Detail_RenderText.insert(INSERT, int(self.Detail_SearchEntry.get()))
+                self.Detail_RenderText.insert(INSERT, spam.to_int(self.Detail_SearchEntry.get()))
                 self.Detail_RenderText.insert(INSERT, "] ")
                 #self.Detail_RenderText.insert(INSERT, "분실물 사진: ")
                 #self.Detail_RenderText.insert(INSERT, detail_DataList[0])
@@ -274,7 +274,7 @@ class MainGUI:
 
         conn = http.client.HTTPConnection("apis.data.go.kr")
         conn.request("GET",
-                     "/1320000/LosfundInfoInqireService/getLosfundDetailInfo?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&ATC_ID=" + id[int(self.Detail_SearchEntry.get())-1] + "&FD_SN=1")
+                     "/1320000/LosfundInfoInqireService/getLosfundDetailInfo?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&ATC_ID=" + id[spam.to_int(self.Detail_SearchEntry.get())-1] + "&FD_SN=1")
         req = conn.getresponse()
 
         detail_DataList.clear()
@@ -311,7 +311,7 @@ class MainGUI:
                             detail_DataList.append(atom.firstChild.nodeValue)
 
                 self.Detail_RenderText.insert(INSERT, "[")
-                self.Detail_RenderText.insert(INSERT, int(self.Detail_SearchEntry.get()))
+                self.Detail_RenderText.insert(INSERT, spam.to_int(self.Detail_SearchEntry.get()))
                 self.Detail_RenderText.insert(INSERT, "] ")
                 self.Detail_RenderText.insert(INSERT, "보관상태: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[0])
@@ -379,7 +379,7 @@ class MainGUI:
 
         conn = http.client.HTTPConnection("apis.data.go.kr")
         conn.request("GET",
-                     "/1320000/LostGoodsInfoInqireService/getLostGoodsInfoAccTpNmCstdyPlace?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&LST_PLACE="+self.area_e+"&LST_PRDT_NM="+self.item_e + "&pageNo="+str(self.pageNum)+"&numOfRows=10")
+                     "/1320000/LostGoodsInfoInqireService/getLostGoodsInfoAccTpNmCstdyPlace?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&LST_PLACE="+self.area_e+"&LST_PRDT_NM="+self.item_e + "&pageNo="+spam.to_string(self.pageNum)+"&numOfRows=10")
         req = conn.getresponse()
         print(req.status, req.reason)
 
@@ -442,7 +442,7 @@ class MainGUI:
 
         conn = http.client.HTTPConnection("apis.data.go.kr")
         conn.request("GET",
-                     "/1320000/LosfundInfoInqireService/getLosfundInfoAccToLc?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&PRDT_NM="+self.item_e +"&ADDR="+self.area_e+"&pageNo="+str(self.pageNum)+"&numOfRows=10")
+                     "/1320000/LosfundInfoInqireService/getLosfundInfoAccToLc?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&PRDT_NM="+self.item_e +"&ADDR="+self.area_e+"&pageNo="+spam.to_string(self.pageNum)+"&numOfRows=10")
         req = conn.getresponse()
         print(req.status, req.reason)
 
