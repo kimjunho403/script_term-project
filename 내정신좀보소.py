@@ -9,7 +9,7 @@ import tkinter as tk
 from pandas import DataFrame
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
+0
 #폰트 관련 임포트
 from matplotlib import font_manager, rc
 from matplotlib import style
@@ -36,6 +36,7 @@ from geopy.geocoders import Nominatim
 import smtplib            #Import smtplib
 from email.mime.text import MIMEText
 
+import webbrowser
 #from teller import *
 id = []
 DataList= []
@@ -164,25 +165,37 @@ class MainGUI:
 
         self.Item_RenderText.configure(state='disabled')
 
-    def EmailButtonAction(self):
-        self.window2 = tk()
-        self.ead_InputLabel = tkinter.Label(self.frame1)
-        self.ead_InputLabel = Entry(self.window, font=self.TempFont, width=26, borderwidth=6)
-        self.ead_InputLabel.pack()
-        self.ead_InputLabel.place(x=390, y=170)
-
+    def SendingsEmail(self):
+        self.email_ad = self.ead_InputLabel.get()
         s = smtplib.SMTP('smtp.gmail.com', 587)
         s.starttls()
-        s.login('kimjunho403@gmail.com', 'kin442266') # 여기에 니 이메일하고 주소
-        string_ = '습득(분실) 장소: '+str(self.p_where)+'\n'+'습득(분실)물: '+str(self.p_what)+'\n'+'관할경찰서: '+str(self.p_address)+'\n'+'전화번호: '+str(self.p_tell)
-
+        s.login('kimjunho403@gmail.com', 'kin442266')  # 여기에 니 이메일하고 주소
+        string_ = '습득(분실) 장소: ' + str(self.p_where) + '\n' + '습득(분실)물: ' + str(self.p_what) + '\n' + '관할경찰서: ' + str(
+            self.p_address) + '\n' + '전화번호: ' + str(self.p_tell)
 
         msg = MIMEText(string_)
         part_html = MIMEText('<br><a href="https://github.com/hyeshinoh/">hyeshin github</a>', 'html')
         msg['Subject'] = "분실(습득)물 관련 정보 메일입니다."
-        s.sendmail("kimjunho403@gmail.com", "dimond2011@naver.com", msg.as_string())
-
+        s.sendmail("kimjunho403@gmail.com", self.email_ad, msg.as_string())
         s.quit()
+
+    def EmailButtonAction(self):
+
+        self.window3 = Tk()
+        self.window3.title("이메일 보낼 주소")
+        self.window3.geometry("500x200")
+        self.window3.configure(bg='#a9d4df')
+
+        self.ead_InputLabel = tkinter.Entry(self.window3, font=self.TempFont, width=20, borderwidth=6)
+        self.ead_InputLabel.pack()
+
+        self.button7 = tkinter.Button(self.window3, text='보내기', command=self.SendingsEmail, width=10, height=1, borderwidth=5, bg='white')
+        self.button7.place(x=200, y =70)
+
+
+
+
+
     def RenderText(self):
         pass
     def Detail_ButtonAction(self):
@@ -514,7 +527,9 @@ class MainGUI:
         window_info = cef.WindowInfo(self.frame3.winfo_id())
         window_info.SetAsChild(self.frame3.winfo_id(), [0, 0, 800, 600])
         cef.Initialize()
+
         browser = cef.CreateBrowserSync(window_info, url='file:///map.html')
+        print(browser)
         cef.MessageLoop()
 
         cef.Shutdown()
@@ -524,11 +539,11 @@ class MainGUI:
         # 위도 경도 지정
         #self.window2 = Tk()
         addressdata = self.Detail_SearchEntry.get()
-        print(DataList[0 + int(addressdata) * 4])
-
+        print(DataList[0 + (int(addressdata)-1) * 4])
 
         app = Nominatim(user_agent='tutorial')
-        location = app.geocode(DataList[0 + int(addressdata) * 4], language='ko')
+
+        location = app.geocode(DataList[0 + (int(addressdata)-1) * 4], language='ko')
 
         print("1111 = ")
         print(location.longitude)
@@ -538,12 +553,11 @@ class MainGUI:
         # 마커 지정
         folium.Marker([float(location.latitude), float(location.longitude)], popup=self.p_address).add_to(m)
         # html 파일로 저장
-        m.save('map.html')
-
+        urls = 'map.html'
+        m.save(urls)
+        webbrowser.open(urls)
         # 브라우저를 위한 쓰레드 생성
-        thread = threading.Thread(target=self.showMap, args=(self.frame3,))
-        thread.daemon = True
-        thread.start()
+
     def drawGr(self):
         # 그래프 그리기
         data2 = {'Category': ['.가방', '.귀금속', '.지갑', '.핸드폰', 'Etc'],
@@ -744,8 +758,6 @@ class MainGUI:
         ax2.set_title('최근 들어온 물건 품목들')
 
 
-        self.frame3 = tkinter.Frame(self.window)
-        self.notebook.add(self.frame3, text="지도")
 
         self.window.mainloop()
 
