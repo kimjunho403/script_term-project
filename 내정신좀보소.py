@@ -29,9 +29,11 @@ import threading
 import sys
 import folium
 from cefpython3 import cefpython as cef
+#지도 관련2
+from geopy.geocoders import Nominatim
 
 #이미지 관련 임포트
-import smtplib 		  	#Import smtplib
+import smtplib            #Import smtplib
 from email.mime.text import MIMEText
 
 #from teller import *
@@ -46,6 +48,12 @@ d_l= []
 
 class MainGUI:
 
+    def setHowMany(self):
+        self.canvas.destroy()
+        self.howmanyindex = self.how_many_Entry.get()
+        self.load_recent_info()
+        self.drawGr()
+
     def load_recent_info(self):
         import urllib
         import http.client
@@ -53,10 +61,12 @@ class MainGUI:
 
         conn = http.client.HTTPConnection("apis.data.go.kr")
         conn.request("GET",
-                     "/1320000/LostGoodsInfoInqireService/getLostGoodsInfoAccTpNmCstdyPlace?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&numOfRows=100")
-        req = conn.getresponse()
-        print(req.status, req.reason)
+                     "/1320000/LostGoodsInfoInqireService/getLostGoodsInfoAccTpNmCstdyPlace?serviceKey=YrQn72lYE4qA3NfS2pkl%2FEwy95kCZ8jghF27PMOoOD3apbMi6htMwfFztU28urc6rMLLh8eWyVdDGVLCooMWPw%3D%3D&numOfRows=" + str(
+                         self.howmanyindex))
 
+        req = conn.getresponse()
+
+        self.kind_list = [0] * 5
         DataList.clear()
         l.clear()
 
@@ -80,7 +90,7 @@ class MainGUI:
                     for atom in subitems:
                         if atom.nodeName in "prdtClNm":  # 코드
                             if atom.firstChild.nodeValue.startswith('가방'):
-                                self.kind_list[0] +=1
+                                self.kind_list[0] += 1
                             elif atom.firstChild.nodeValue.startswith('귀금속'):
                                 self.kind_list[1] += 1
                             elif atom.firstChild.nodeValue.startswith('지갑'):
@@ -89,8 +99,6 @@ class MainGUI:
                                 self.kind_list[3] += 1
                             else:
                                 self.kind_list[4] += 1
-
-
 
     #이전 버튼을 누르면 한칸씩 출력
     def PreButtonAction(self):
@@ -156,13 +164,13 @@ class MainGUI:
 
         self.Item_RenderText.configure(state='disabled')
 
-    def MapButtonAction(self):
-        window = Tk()
-        Button(window, text='folium 지도', command=Pressed).pack()
-        frame = Frame(window, width=800, height=600)
-        frame.pack()
-        pass
     def EmailButtonAction(self):
+        self.window2 = tk()
+        self.ead_InputLabel = tkinter.Label(self.frame1)
+        self.ead_InputLabel = Entry(self.window, font=self.TempFont, width=26, borderwidth=6)
+        self.ead_InputLabel.pack()
+        self.ead_InputLabel.place(x=390, y=170)
+
         s = smtplib.SMTP('smtp.gmail.com', 587)
         s.starttls()
         s.login('kimjunho403@gmail.com', 'kin442266') # 여기에 니 이메일하고 주소
@@ -179,8 +187,6 @@ class MainGUI:
         pass
     def Detail_ButtonAction(self):
         from urllib import parse
-
-
         self.Detail_RenderText.configure(state='normal')
         self.Detail_RenderText.delete(0.0, END)
 
@@ -243,9 +249,10 @@ class MainGUI:
                 im2 = im2.resize((100, 100))
                 image2 = ImageTk.PhotoImage(im2)
 
-                temp = Label(self.window, image=image2)
-                temp.image = image2
-                temp.place(x=600, y=510)
+
+                self.temp = Label(self.frame1, image=image2)
+                self.temp.image = image2
+                self.temp.place(x=580, y=350)
 
                 self.Detail_RenderText.insert(INSERT, "\n")
                 self.Detail_RenderText.insert(INSERT, "분실한 장소: ")
@@ -256,6 +263,7 @@ class MainGUI:
                 self.Detail_RenderText.insert(INSERT, "\n")
                 self.Detail_RenderText.insert(INSERT, "관할 경찰서: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[3])
+                adress = detail_DataList[3]
                 self.Detail_RenderText.insert(INSERT, "\n")
                 self.Detail_RenderText.insert(INSERT, "전화번호: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[4])
@@ -311,13 +319,14 @@ class MainGUI:
                             detail_DataList.append(atom.firstChild.nodeValue)
 
                 self.Detail_RenderText.insert(INSERT, "[")
-                self.Detail_RenderText.insert(INSERT, spam.to_int(self.Detail_SearchEntry.get()))
+                #self.Detail_RenderText.insert(INSERT, spam.to_int(self.Detail_SearchEntry.get()))
                 self.Detail_RenderText.insert(INSERT, "] ")
                 self.Detail_RenderText.insert(INSERT, "보관상태: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[0])
                 self.Detail_RenderText.insert(INSERT, "\n")
                 self.Detail_RenderText.insert(INSERT, "경찰서: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[1])
+
                 self.Detail_RenderText.insert(INSERT, "\n")
                 #self.Detail_RenderText.insert(INSERT, "이미지: ")
                 #self.Detail_RenderText.insert(INSERT, detail_DataList[2])
@@ -348,9 +357,9 @@ class MainGUI:
                 im2 = im2.resize((100, 100))
                 image2 = ImageTk.PhotoImage(im2)
 
-                temp = Label(self.window, image=image2)
+                temp = Label(self.frame1, image=image2)
                 temp.image = image2
-                temp.place(x=600, y=510)
+                temp.place(x=580, y=350)
                 # 이미지 출력 끝
 
     def SearchButtonAction(self):
@@ -369,9 +378,8 @@ class MainGUI:
         elif self.is_foundArticle  ==False:
             self.SearchLostArticle()
 
-
-
         self.Item_RenderText.configure(state='disabled')
+
     def SearchLostArticle(self):
         import urllib
         import http.client
@@ -488,6 +496,7 @@ class MainGUI:
                 self.Item_RenderText.insert(INSERT, "] ")
                 self.Item_RenderText.insert(INSERT, "주소: ")
                 self.Item_RenderText.insert(INSERT, DataList[0 + i * 4])
+                #찾기 1번
                 self.Item_RenderText.insert(INSERT, "\n")
                 self.Item_RenderText.insert(INSERT, "습득물: ")
                 self.Item_RenderText.insert(INSERT, DataList[1 + i * 4])
@@ -499,7 +508,63 @@ class MainGUI:
                 self.Item_RenderText.insert(INSERT, DataList[3 + i * 4])
                 self.Item_RenderText.insert(INSERT, "\n\n")
 
+    # cef모듈로 브라우저 실행
+    def showMap(self, frame):
+        sys.excepthook = cef.ExceptHook
+        window_info = cef.WindowInfo(self.frame3.winfo_id())
+        window_info.SetAsChild(self.frame3.winfo_id(), [0, 0, 800, 600])
+        cef.Initialize()
+        browser = cef.CreateBrowserSync(window_info, url='file:///map.html')
+        cef.MessageLoop()
 
+        cef.Shutdown()
+
+    def Pressed(self):
+        # 지도 저장
+        # 위도 경도 지정
+        #self.window2 = Tk()
+        addressdata = self.Detail_SearchEntry.get()
+        print(DataList[0 + int(addressdata) * 4])
+
+
+        app = Nominatim(user_agent='tutorial')
+        location = app.geocode(DataList[0 + int(addressdata) * 4], language='ko')
+
+        print("1111 = ")
+        print(location.longitude)
+        print(location.latitude)
+
+        m = folium.Map(location=[float(location.latitude), float(location.longitude)], zoom_start=20)  # 여기서 크기 조정
+        # 마커 지정
+        folium.Marker([float(location.latitude), float(location.longitude)], popup=self.p_address).add_to(m)
+        # html 파일로 저장
+        m.save('map.html')
+
+        # 브라우저를 위한 쓰레드 생성
+        thread = threading.Thread(target=self.showMap, args=(self.frame3,))
+        thread.daemon = True
+        thread.start()
+    def drawGr(self):
+        # 그래프 그리기
+        data2 = {'Category': ['.가방', '.귀금속', '.지갑', '.핸드폰', 'Etc'],
+                 'Count': [self.kind_list[0], self.kind_list[1], self.kind_list[2], self.kind_list[3],
+                           self.kind_list[4]]
+                 }
+        df2 = DataFrame(data2, columns=['Category', 'Count'])
+
+        self.canvas = Canvas(self.frame2, width=700, height=700, bg='#a9d4df')
+        self.canvas.pack()
+
+        figure2 = plt.Figure(figsize=(6, 4), dpi=100)
+        # plt.xlabel('카테고리', fontproperties=fontprop)
+        # plt.ylabel('갯수', fontproperties=fontprop)
+
+        ax2 = figure2.add_subplot(111)
+        line2 = FigureCanvasTkAgg(figure2, self.canvas)
+        line2.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
+        df2 = df2[['Category', 'Count']].groupby('Category').sum()
+        df2.plot(kind='line', legend=True, ax=ax2, color='b', marker='o', fontsize=10)
+        ax2.set_title('최근 들어온 물건 품목들')
 
 
     def v(self):
@@ -517,7 +582,9 @@ class MainGUI:
         self.pageNum =1
         self.is_foundArticle = True
         self.kind_list = [0] * 5
+        self.howmanyindex=100
         self.load_recent_info()
+
 
         #이미지 선언
         self.TempFont = font.Font(size=16, weight='bold', family='Consolas')
@@ -552,19 +619,19 @@ class MainGUI:
         self.r2.place(x=300, y=100)
 
         #notebook 관련 코드
-        notebook = tkinter.ttk.Notebook(self.window, width=700, height=570)
-        notebook.pack()
-        notebook.place(x=20, y=140)
+        self.notebook = tkinter.ttk.Notebook(self.window, width=700, height=570)
+        self.notebook.pack()
+        self.notebook.place(x=20, y=140)
 
-        frame1 = tkinter.Frame(self.window)
-        notebook.add(frame1, text="메인 화면")
+        self.frame1 = tkinter.Frame(self.window)
+        self.notebook.add(self.frame1, text="메인 화면")
 
-        self.canvas = Canvas(frame1, width=700, height=600, bg='#a9d4df')
+        self.canvas = Canvas(self.frame1, width=700, height=600, bg='#a9d4df')
         self.canvas.pack()
         #lab1=Label(self.window, text='', font=self.TempFont)
         #lab1.place(x=380,y=200)
 
-        self.area_InputLabel = tkinter.Label(frame1)
+        self.area_InputLabel = tkinter.Label(self.frame1)
         self.area_InputLabel = Entry(self.window, font=self.TempFont, width=26, borderwidth=6)
         self.area_InputLabel.pack()
         self.area_InputLabel.place(x=390, y=170)
@@ -590,9 +657,9 @@ class MainGUI:
         self.Item_RenderText.configure(state='disabled')
 
         # 상세 정보 표시판
-        self.Detail_RenderText = Text(self.window, width=45, height=25, borderwidth=6)
+        self.Detail_RenderText = Text(self.frame1, width=45, height=25, borderwidth=6)
         self.Detail_RenderText.pack()
-        self.Detail_RenderText.place(x=390, y=290)
+        self.Detail_RenderText.place(x=365, y=125)
 
         self.Detail_RenderText.configure(state='disabled')
 
@@ -626,7 +693,7 @@ class MainGUI:
         self.Detail_SearchEntry.pack()
         self.Detail_SearchEntry.place(x=25, y=540)
 
-        self.map_Button = Button(self.window, image=self.image_map, command=self.MapButtonAction)
+        self.map_Button = Button(self.window, image=self.image_map, command=self.Pressed)
         self.map_Button['bg'] = '#a9d4df'
         self.map_Button.pack()
         self.map_Button.place(x=430, y=640)
@@ -637,8 +704,9 @@ class MainGUI:
         self.email_Button.place(x=580, y=640)
 
         # 두번째 리스트
-        frame2 = tkinter.Frame(self.window)
-        notebook.add(frame2, text="최근 들어온 물품들")
+        self.frame2 = tkinter.Frame(self.window)
+        self.notebook.add(self.frame2, text="최근 들어온 물품들")
+
 
         #label2 = tkinter.Label(frame2, text="하루동안 들어온 물품 리스트")
         #label2.pack()
@@ -646,19 +714,27 @@ class MainGUI:
         #self.canvas = Canvas(frame2, width=700, height=600, bg='#a9d4df')
         #self.canvas.pack()
 
-        # 그래프 그리기
 
-        data2 = {'Category': ['.지갑', '.핸드폰', '.가방', '.귀금속', 'Etc'],
-                 'Count': [10, 5, 8, 7.2, 15]
+        data2 = {'Category': ['.가방', '.귀금속', '.지갑', '.핸드폰', 'Etc'],
+                 'Count': [self.kind_list[0], self.kind_list[1], self.kind_list[2], self.kind_list[3],
+                           self.kind_list[4]]
                  }
         df2 = DataFrame(data2, columns=['Category', 'Count'])
 
-        self.canvas = Canvas(frame2, width=700, height=600, bg='#a9d4df')
+        self.canvas = Canvas(self.frame2, width=700, height=700, bg='#a9d4df')
         self.canvas.pack()
 
+
+        self.how_many_button = Button(self.frame2, width=14, font=self.TempFont, text="검색", command=self.setHowMany)
+        self.how_many_button.place(x=370, y=450)
+
+        self.how_many_Entry = Entry(self.frame2, font=self.TempFont, width=13, borderwidth=6)
+        self.how_many_Entry.pack()
+        self.how_many_Entry.place(x=170, y=450)
+
         figure2 = plt.Figure(figsize=(6, 4), dpi=100)
-        #plt.xlabel('카테고리', fontproperties=fontprop)
-        #plt.ylabel('갯수', fontproperties=fontprop)
+        # plt.xlabel('카테고리', fontproperties=fontprop)
+        # plt.ylabel('갯수', fontproperties=fontprop)
 
         ax2 = figure2.add_subplot(111)
         line2 = FigureCanvasTkAgg(figure2, self.canvas)
@@ -667,29 +743,12 @@ class MainGUI:
         df2.plot(kind='line', legend=True, ax=ax2, color='b', marker='o', fontsize=10)
         ax2.set_title('최근 들어온 물건 품목들')
 
+
+        self.frame3 = tkinter.Frame(self.window)
+        self.notebook.add(self.frame3, text="지도")
+
         self.window.mainloop()
 
-# cef모듈로 브라우저 실행
-def showMap(frame):
-    sys.excepthook = cef.ExceptHook
-    window_info = cef.WindowInfo(frame.winfo_id())
-    window_info.SetAsChild(frame.winfo_id(), [0,0,800,600])
-    cef.Initialize()
-    browser = cef.CreateBrowserSync(window_info, url='file:///map.html')
-    cef.MessageLoop()
 
-def Pressed():
-    # 지도 저장
-    # 위도 경도 지정
-    m = folium.Map(location=[37.3402849, 126.7313189], zoom_start=20)#여기서 크기 조정
-    # 마커 지정
-    folium.Marker([37.3402849, 126.7313189], popup='한국산업기술대').add_to(m)
-    # html 파일로 저장
-    m.save('map.html')
-
-    # 브라우저를 위한 쓰레드 생성
-    thread = threading.Thread(target=showMap, args=(frame,))
-    thread.daemon = True
-    thread.start()
 
 MainGUI()
