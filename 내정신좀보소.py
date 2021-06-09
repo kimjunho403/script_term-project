@@ -115,7 +115,10 @@ class MainGUI:
 
         self.item_e = parse.quote(self.item_InputLabel.get())
         self.area_e = parse.quote(self.area_InputLabel.get())
-        self.SearchFoundArticle()
+        if self.is_foundArticle == True:  # 습득물
+            self.SearchFoundArticle()
+        elif self.is_foundArticle == False:
+            self.SearchLostArticle()
 
         self.Item_RenderText.configure(state='disabled')
 
@@ -131,7 +134,10 @@ class MainGUI:
 
         self.item_e = parse.quote(self.item_InputLabel.get())
         self.area_e = parse.quote(self.area_InputLabel.get())
-        self.SearchFoundArticle()
+        if self.is_foundArticle == True:  # 습득물
+            self.SearchFoundArticle()
+        elif self.is_foundArticle == False:
+            self.SearchLostArticle()
 
         self.Item_RenderText.configure(state='disabled')
 
@@ -147,7 +153,10 @@ class MainGUI:
 
         self.item_e = parse.quote(self.item_InputLabel.get())
         self.area_e = parse.quote(self.area_InputLabel.get())
-        self.SearchFoundArticle()
+        if self.is_foundArticle == True:  # 습득물
+            self.SearchFoundArticle()
+        elif self.is_foundArticle == False:
+            self.SearchLostArticle()
 
         self.Item_RenderText.configure(state='disabled')
     def DoubleNextButtonAction(self):
@@ -161,7 +170,10 @@ class MainGUI:
 
         self.item_e = parse.quote(self.item_InputLabel.get())
         self.area_e = parse.quote(self.area_InputLabel.get())
-        self.SearchFoundArticle()
+        if self.is_foundArticle == True:  # 습득물
+            self.SearchFoundArticle()
+        elif self.is_foundArticle == False:
+            self.SearchLostArticle()
 
         self.Item_RenderText.configure(state='disabled')
 
@@ -256,8 +268,6 @@ class MainGUI:
                 self.Detail_RenderText.insert(INSERT, "[")
                 self.Detail_RenderText.insert(INSERT, spam.to_int(self.Detail_SearchEntry.get()))
                 self.Detail_RenderText.insert(INSERT, "] ")
-                #self.Detail_RenderText.insert(INSERT, "분실물 사진: ")
-                #self.Detail_RenderText.insert(INSERT, detail_DataList[0])
                 #이미지 출력
                 url = detail_DataList[0]
                 with urllib.request.urlopen(url) as u:
@@ -337,7 +347,7 @@ class MainGUI:
                             detail_DataList.append(atom.firstChild.nodeValue)
 
                 self.Detail_RenderText.insert(INSERT, "[")
-                #self.Detail_RenderText.insert(INSERT, spam.to_int(self.Detail_SearchEntry.get()))
+                self.Detail_RenderText.insert(INSERT, spam.to_int(self.Detail_SearchEntry.get()))
                 self.Detail_RenderText.insert(INSERT, "] ")
                 self.Detail_RenderText.insert(INSERT, "보관상태: ")
                 self.Detail_RenderText.insert(INSERT, detail_DataList[0])
@@ -545,11 +555,11 @@ class MainGUI:
         #self.window2 = Tk()
         addressdata = self.Detail_SearchEntry.get()
         print(DataList[0 + (int(addressdata)-1) * 4])
-
+        print(self.p_address)
         app = Nominatim(user_agent='tutorial')
 
-        location = app.geocode(DataList[0 + (int(addressdata)-1) * 4], language='ko')
-
+        #location = app.geocode(DataList[0 + (int(addressdata)-1) * 4], language='ko')
+        location = app.geocode(self.p_address, language='ko')
         print("1111 = ")
         print(location.longitude)
         print(location.latitude)
@@ -762,10 +772,6 @@ class MainGUI:
         df2 = df2[['Category', 'Count']].groupby('Category').sum()
         df2.plot(kind='line', legend=True, ax=ax2, color='b', marker='o', fontsize=10)
         ax2.set_title('최근 들어온 물건 품목들')
-
-
-        self.frame3 = tkinter.Frame(self.window)
-        self.notebook.add(self.frame3, text="지도")
 
         self.window.mainloop()
 
