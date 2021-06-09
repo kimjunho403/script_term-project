@@ -9,7 +9,7 @@ import tkinter as tk
 from pandas import DataFrame
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-0
+
 #폰트 관련 임포트
 from matplotlib import font_manager, rc
 from matplotlib import style
@@ -181,16 +181,21 @@ class MainGUI:
 
     def EmailButtonAction(self):
 
-        self.window3 = Tk()
+        self.window3 = Toplevel()
         self.window3.title("이메일 보낼 주소")
         self.window3.geometry("500x200")
         self.window3.configure(bg='#a9d4df')
 
-        self.ead_InputLabel = tkinter.Entry(self.window3, font=self.TempFont, width=20, borderwidth=6)
+
+        self.iel = Label(self.window3, image=self.image_email_label)
+        self.iel.pack()
+        self.iel.configure(bg='#a9d4df')
+
+        self.ead_InputLabel = Entry(self.window3, font=self.TempFont, width=20, borderwidth=6)
         self.ead_InputLabel.pack()
 
-        self.button7 = tkinter.Button(self.window3, text='보내기', command=self.SendingsEmail, width=10, height=1, borderwidth=5, bg='white')
-        self.button7.place(x=200, y =70)
+        self.button7 = Button(self.window3, text='보내기', command=self.SendingsEmail, width=10, height=1, borderwidth=5, bg='white')
+        self.button7.place(x=200, y =150)
 
 
 
@@ -610,6 +615,7 @@ class MainGUI:
         self.image_oneright = PhotoImage(file='image/2.PNG')
         self.image_fiveleft = PhotoImage(file='image/3.PNG')
         self.image_fiveright = PhotoImage(file='image/4.PNG')
+        self.image_email_label = PhotoImage(file='image/emaillabel.PNG')
         self.imageLabel = Label(self.window, image= self.image_title)
         self.imageLabel['bg'] = '#a9d4df'
 
@@ -758,6 +764,8 @@ class MainGUI:
         ax2.set_title('최근 들어온 물건 품목들')
 
 
+        self.frame3 = tkinter.Frame(self.window)
+        self.notebook.add(self.frame3, text="지도")
 
         self.window.mainloop()
 
